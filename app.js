@@ -5,7 +5,7 @@ const port = 3000
 
 //connect mongoose database
 const mongoose = require('mongoose')
-mongoose.connect('mongodb://localhost/url', { useNewUrlParser: true })
+mongoose.connect('mongodb://localhost/url', { useNewUrlParser: true, useUnifiedTopology: true })
 const db = mongoose.connection
 
 db.on('error', () => {
@@ -24,7 +24,7 @@ app.use(express.static('public'))
 
 // routers
 app.get('/', (req, res) => {
-  res.send('hello')
+  res.render('index')
 })
 
 app.listen(port, () => {
