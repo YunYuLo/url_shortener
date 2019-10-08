@@ -8,8 +8,14 @@
       <input type="url" name="longUrl" id="longUrl" class="form-control" pattern="https?://.+" value="{{longUrl}}"
         placeholder="Enter URL" required>
     </div>
+    <div class="form-group w-100">
+      <label for="longUrl" class="sr-only"></label>
+      <input type="url" name="longUrl" id="longUrl" class="form-control" pattern="https?://.+" value="{{shortUrl}}"
+        placeholder="short URL" disabled>
+    </div>
     <div class="buttons d-flex w-100 justify-content-center mt-3">
       <button class="btn btn-primary mr-4 px-5" id="submit">Submit</button>
     </div>
   </form>
+
 </section>

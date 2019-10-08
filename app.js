@@ -4,6 +4,8 @@ const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 const port = 3000
 
+const urlExamine = require('./urlExamine')
+
 //connect mongoose database
 const mongoose = require('mongoose')
 mongoose.connect('mongodb://localhost/url', { useNewUrlParser: true, useUnifiedTopology: true })
@@ -31,21 +33,30 @@ app.get('/', (req, res) => {
 
 
 app.post('/', (req, res) => {
-  const longUrl = req.body.longUrl
-  const newUrl = new Url({
-    longUrl: longUrl,
-    shortUrl: ""
-  })
-  const shortUrl = newUrl._id.toString().slice(-5)
-  newUrl.shortUrl = shortUrl
+  //check the pattern of URL
+  //...
+  Url.findOne({ longUrl: req.body.longUrl })
+    .exec((err, url) => {
+      if (err) throw err
+      let basicUrl = 'http://localhost:3000/'
 
-  newUrl.save((err) => {
-    if (err) return console.log(err)
+      if (url) {
+        //url exist
+        let shortUrl = basicUrl + url.shortUrl
+        res.render('index', { shortUrl, longUrl: url.longUrl })
 
-    console.log('the new URL is added')
-    //flash: 短網址產生結果
-    res.redirect('/')
-  })
+      } else {
+        ; (async () => {
+          try {
+            //add new url to db
+            let shortUrl = basicUrl + await urlExamine(req.body.longUrl)
+            res.render('index', { shortUrl, longUrl: url.longUrl })
+          } catch (e) {
+            console.log(e)
+          }
+        })()
+      }
+    })
 })
 
 app.get('/:shortUrl', (req, res) => {
