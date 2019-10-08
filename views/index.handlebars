@@ -1,16 +1,15 @@
 <section class="d-flex flex-column justify-content-center vh-100">
   <h1 class="text-center title">URL Shortener</h1>
   <h1 class="display-1 text-center"><i class="fas fa-link"></i></h1>
-  <form class="w-75 mx-auto d-flex flex-column align-items-center">
+  <form class="w-75 mx-auto d-flex flex-column align-items-center" action="/" method="POST">
 
     <div class="form-group w-100">
-      <label for="url" class="sr-only"></label>
-      <input type="url" name="url" id="url" class="form-control" pattern="https?://.+" value="{{inputUrl}}"
-        placeholder="Your Website URL" required>
+      <label for="longUrl" class="sr-only"></label>
+      <input type="url" name="longUrl" id="longUrl" class="form-control" pattern="https?://.+" value="{{longUrl}}"
+        placeholder="Enter URL" required>
     </div>
     <div class="buttons d-flex w-100 justify-content-center mt-3">
       <button class="btn btn-primary mr-4 px-5" id="submit">Submit</button>
-      <button class="btn btn-danger px-5" id="reset" type="button">Reset</button>
     </div>
   </form>
 </section>
