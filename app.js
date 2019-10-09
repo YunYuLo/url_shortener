@@ -60,7 +60,7 @@ app.post('/', (req, res) => {
     .exec((err, url) => {
       if (err) throw err
 
-      const production = 'https://vivi-url-shortener.herokuapp.com'
+      const production = 'https://vivi-url-shortener.herokuapp.com/'
       const development = 'http://localhost:3000/'
       const basicUrl = (process.env.NODE_ENV ? production : development)
 
