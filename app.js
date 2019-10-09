@@ -59,7 +59,10 @@ app.post('/', (req, res) => {
   Url.findOne({ longUrl: req.body.longUrl })
     .exec((err, url) => {
       if (err) throw err
-      let basicUrl = process.env.LOCAL_URL || 'http://localhost:3000/'
+
+      const production = 'https://vivi-url-shortener.herokuapp.com'
+      const development = 'http://localhost:3000/'
+      const basicUrl = (process.env.NODE_ENV ? production : development)
 
       if (url) {
         //url exist
