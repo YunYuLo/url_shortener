@@ -4,13 +4,20 @@ const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
 const session = require('express-session')
 const flash = require('connect-flash')
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 const port = 3000
 
 const urlExamine = require('./urlExamine')
 
 //connect mongoose database
 const mongoose = require('mongoose')
-mongoose.connect('mongodb://localhost/url', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/url', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true
+})
 const db = mongoose.connection
 
 db.on('error', () => {
@@ -52,7 +59,7 @@ app.post('/', (req, res) => {
   Url.findOne({ longUrl: req.body.longUrl })
     .exec((err, url) => {
       if (err) throw err
-      let basicUrl = 'http://localhost:3000/'
+      let basicUrl = process.env.LOCAL_URL || 'http://localhost:3000/'
 
       if (url) {
         //url exist
@@ -85,6 +92,6 @@ app.get('/:shortUrl', (req, res) => {
   })
 })
 
-app.listen(port, () => {
+app.listen(process.env.PORT || port, () => {
   console.log('App is running')
 })
