@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
+const session = require('express-session')
+const flash = require('connect-flash')
 const port = 3000
 
 const urlExamine = require('./urlExamine')
@@ -21,10 +23,24 @@ db.once('open', () => {
 // include mongoose models
 const Url = require('./models/url')
 
+app.use(session({
+  secret: 'your secret key',
+  resave: false,
+  saveUninitialized: true
+}))
+
+
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.static('public'))
+app.use(flash())
+
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg')
+  res.locals.warning_msg = req.flash('warning_msg')
+  next()
+})
 
 // routers
 app.get('/', (req, res) => {
@@ -33,8 +49,6 @@ app.get('/', (req, res) => {
 
 
 app.post('/', (req, res) => {
-  //check the pattern of URL
-  //...
   Url.findOne({ longUrl: req.body.longUrl })
     .exec((err, url) => {
       if (err) throw err
@@ -44,7 +58,6 @@ app.post('/', (req, res) => {
         //url exist
         let shortUrl = basicUrl + url.shortUrl
         res.render('index', { shortUrl, longUrl: url.longUrl })
-
       } else {
         ; (async () => {
           try {
@@ -66,7 +79,7 @@ app.get('/:shortUrl', (req, res) => {
     if (url) {
       res.redirect(url.longUrl)
     } else {
-      //flash: 短網誌有誤
+      req.flash('warning_msg', 'Short URL incorrect!')
       res.redirect('/')
     }
   })
