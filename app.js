@@ -54,34 +54,41 @@ app.get('/', (req, res) => {
   res.render('index')
 })
 
+//create a short url
+app.post('/', async (req, res) => {
+  try {
+    let url = await Url.findOne({ longUrl: req.body.longUrl }).exec()
 
-app.post('/', (req, res) => {
-  Url.findOne({ longUrl: req.body.longUrl })
-    .exec((err, url) => {
-      if (err) throw err
+    const production = 'https://vivi-url-shortener.herokuapp.com/'
+    const development = 'http://localhost:3000/'
+    const basicUrl = (process.env.NODE_ENV ? production : development)
 
-      const production = 'https://vivi-url-shortener.herokuapp.com/'
-      const development = 'http://localhost:3000/'
-      const basicUrl = (process.env.NODE_ENV ? production : development)
-
-      if (url) {
-        //url exist
-        let shortUrl = basicUrl + url.shortUrl
-        res.render('index', { shortUrl, longUrl: url.longUrl })
-      } else {
-        ; (async () => {
-          try {
-            //add new url to db
-            let shortUrl = basicUrl + await urlExamine(req.body.longUrl)
-            res.render('index', { shortUrl, longUrl: url.longUrl })
-          } catch (e) {
-            console.log(e)
-          }
-        })()
-      }
-    })
+    if (url) {
+      //url exist
+      res.render('index', {
+        shortUrl: basicUrl + url.shortUrl,
+        longUrl: url.longUrl
+      })
+    } else {
+      //add new url to db
+      let shortId = await urlExamine()
+      const newUrl = new Url({
+        longUrl: req.body.longUrl,
+        shortUrl: shortId
+      })
+      await newUrl.save()
+      res.render('index', {
+        shortUrl: basicUrl + shortId,
+        longUrl: req.body.longUrl
+      })
+    }
+  } catch (err) {
+    req.flash('warning_msg', 'URL incorrect, Please check again!')
+    res.redirect('/')
+  }
 })
 
+//redirect short url to original page
 app.get('/:shortUrl', (req, res) => {
   Url.findOne({ shortUrl: req.params.shortUrl }, (err, url) => {
     if (err) throw err
