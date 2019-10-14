@@ -58,10 +58,9 @@ app.get('/', (req, res) => {
 app.post('/', async (req, res) => {
   try {
     let url = await Url.findOne({ longUrl: req.body.longUrl }).exec()
+    console.log(url)
 
-    const production = 'https://vivi-url-shortener.herokuapp.com/'
-    const development = 'http://localhost:3000/'
-    const basicUrl = (process.env.NODE_ENV ? production : development)
+    const basicUrl = `${req.get('origin')}/`
 
     if (url) {
       //url exist
