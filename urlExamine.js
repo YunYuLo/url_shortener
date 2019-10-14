@@ -1,16 +1,16 @@
 const Url = require('./models/url')
 
 const urlExamine = async () => {
-
+  let shortUrl = ''
   do {
-    const shortUrl = getRandomDigit(5)
+    shortUrl = getRandomDigit(5)
     const shortUrlExist = await Url.findOne({ shortUrl }).exec()
-    if (shortUrlExist) {
-      shortUrl = ''
-    } else {
+
+    if (!shortUrlExist) {
       return shortUrl
     }
-  } while (shortUrl)
+
+  } while (shortUrlExist)
 
 }
 
